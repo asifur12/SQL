@@ -1,0 +1,108 @@
+
+Data Wrangling, Analysis and AB Testing with SQL
+
+--Exercise 1: Create the right subtable for recently viewed events using the view_item_events table.
+-- select
+-- user_id,
+-- item_id,
+-- event_time,
+-- ROW_NUMBER() over (PARTITION by user_id order by event_time desc)
+-- as row_number,
+-- rank() over(PARTITION by user_id order by event_time desc)
+-- as rank,
+-- DENSE_RANK() over (partition by user_id order by event_time desc)
+-- as DENSE_RANK 
+
+-- from 
+-- dsv1069.view_item_events
+
+-- Exercise 2 join your tables together recent_viewers, users, items
+-- SELECT *
+-- FROM 
+-- (
+--   select 
+--   user_id,
+--   item_id,
+--   event_time,
+--   ROW_NUMBER() over (PARTITION by user_id order by event_time desc)
+--   as view_number
+
+
+--   from 
+-- dsv1069.view_item_events
+-- ) recent_views
+-- join dsv1069.users
+-- on users.id = recent_views.user_id
+-- JOIN 
+--   dsv1069.items
+-- ON 
+--   items.id = recent_views.item_id
+
+
+
+-- Exercise 3 Cleanup this query outline and pull only the columns you need.
+-- SELECT 
+--   users.id as user_id,
+--   users.email_address,
+--   items.id as item_id,
+--   items.name as item_name,
+--   items.category as item_category
+
+-- FROM 
+-- (
+--   select 
+--   user_id,
+--   item_id,
+--   event_time,
+--   ROW_NUMBER() over (PARTITION by user_id order by event_time desc)
+--   as view_number
+
+
+--   from 
+-- dsv1069.view_item_events
+-- ) recent_views
+-- join dsv1069.users
+-- on users.id = recent_views.user_id
+-- JOIN 
+--   dsv1069.items
+-- ON 
+--   items.id = recent_views.item_id
+  
+-- Exercise 4 add any extra filtering that you think would make this email better
+-- SELECT 
+--   COALESCE (users.parent_user_id, users.id )       as user_id,
+--   users.email_address,
+--   items.id      as item_id,
+--   items.name    as item_name,
+--   items.category as item_category
+
+-- FROM 
+-- (
+--   select 
+--   user_id,
+--   item_id,
+--   event_time,
+--   ROW_NUMBER() over (PARTITION by user_id order by event_time desc)
+--   as view_number
+
+
+--   from 
+-- dsv1069.view_item_events
+-- where event_time > '2017-01-01'
+-- ) recent_views
+-- join dsv1069.users
+-- on users.id = recent_views.user_id
+-- JOIN 
+--   dsv1069.items
+-- ON 
+--   items.id = recent_views.item_id
+-- LEFT OUTER JOIN 
+--   dsv1069.orders
+--   ON 
+--   orders.item_id = recent_views.item_id
+--   AND 
+--   orders.user_id = recent_views.user_id
+-- WHERE
+-- view_number = 1
+-- AND 
+-- users.deleted_at is not null
